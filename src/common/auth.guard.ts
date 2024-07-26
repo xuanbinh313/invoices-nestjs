@@ -11,18 +11,16 @@ import { IS_PUBLIC_KEY } from './auth.decoration';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService,private reflector: Reflector) {}
+  constructor(private jwtService: JwtService, private reflector: Reflector) { }
   async canActivate(context: ExecutionContext): Promise<boolean> {
     console.log('AuthGuard');
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [context.getHandler(), context.getClass()]);
     if (isPublic) {
       return true;
-    } 
+    }
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
-    if (!token) {
-      throw new UnauthorizedException('Invalid token');
-    }
+    if (!token) throw new UnauthorizedException('Invalid token');
     try {
       const payload = await this.jwtService.verifyAsync(token);
       request.user = payload;

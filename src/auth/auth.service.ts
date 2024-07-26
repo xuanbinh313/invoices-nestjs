@@ -1,50 +1,39 @@
-import { JwtService } from '@nestjs/jwt';
-import { SignInDto } from './dto/sign-in.dto';
-import { UsersService } from './../users/users.service';
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { SignUpDto } from './dto/sign-up.dto';
+import { JwtService } from '@nestjs/jwt';
+import { AccountsService } from 'src/accounts/accounts.service';
 import { jwtConstants } from 'src/constants/jwtConstants';
+import { SignInDto } from './dto/sign-in.dto';
+import { SignUpDto } from './dto/sign-up.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
+    private accountsService: AccountsService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async singIn(signInDto: SignInDto) {
-    const existUser = await this.usersService.findName(signInDto.username);
-    if (!existUser) {
-      throw new NotFoundException('User not found');
-    }
-    if (existUser.password !== signInDto.password) {
-      throw new BadRequestException('Invalid password');
-    }
-    const { password, ...data } = existUser;
+    const existAccount = await this.accountsService.findName(signInDto.username);
+    if (!existAccount) throw new NotFoundException('User not found');
+    if (existAccount.password !== signInDto.password) throw new BadRequestException('Invalid password');
+    const { password, ...data } = existAccount;
     const payload = {
-      sub: existUser.userId,
-      username: existUser.username,
-      roles: existUser.roles,
+      sub: existAccount.userId,
+      username: existAccount.username,
+      roles: existAccount.roles,
     };
-    const token = await this.jwtService.signAsync(payload, {
-      secret: jwtConstants.secret,
-    });
-    return {
-      data,
-      token,
-    };
+    const token = await this.jwtService.signAsync(payload, { secret: jwtConstants.secret });
+    return { data, token };
   }
 
   async signUp(singUpDto: SignUpDto) {
-    const existUser = await this.usersService.findName(singUpDto.username);
-    if (existUser) {
-      throw new BadRequestException('User already exists');
-    }
+    const existAccount = await this.accountsService.findName(singUpDto.username);
+    if (existAccount) throw new BadRequestException('User already exists');
     const { username, password, email } = singUpDto;
-    return this.usersService.createUser(username, password, email);
+    return this.accountsService.createUser(username, password, email);
   }
 }

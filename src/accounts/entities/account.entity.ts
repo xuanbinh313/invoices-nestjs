@@ -1,6 +1,6 @@
 import { Role } from "src/common/role.enum";
 
-export class User {
+export class Account {
     id: number;
     username: string;
     password: string;

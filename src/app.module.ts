@@ -1,15 +1,14 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { AccountsModule } from './accounts/accounts.module';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { ProductsModule } from './products/products.module';
-import { ValidationPipe } from './common/validation.pipe';
-import { APP_GUARD,APP_PIPE } from '@nestjs/core';
+import { ClientsModule } from './clients/clients.module';
 import { AuthGuard } from './common/auth.guard';
 import { RoleGuard } from './common/role.guard';
-import { ClientsModule } from './clients/clients.module';
+import { ValidationPipe } from './common/validation.pipe';
 
 @Module({
-  imports: [AuthModule, UsersModule, ProductsModule, ClientsModule],
+  imports: [AuthModule, ClientsModule, AccountsModule],
   providers: [
     {
       provide: APP_PIPE,
