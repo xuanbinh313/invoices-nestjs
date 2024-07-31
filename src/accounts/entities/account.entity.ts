@@ -1,9 +1,35 @@
-import { Role } from "src/common/role.enum";
+import { BaseEntity } from "src/common/base.entity";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-export class Account {
+@Entity()
+export class Account extends BaseEntity{
+    @PrimaryGeneratedColumn({ name: 'account_id' })
     id: number;
-    username: string;
-    password: string;
+
+    @Column({ name: 'company_name' })
+    companyName: string;
+
+    @Column()
+    ownerName: string;
+
+    @Column({ name: 'owner_email' })
+    ownerEmail: string
+
+    @Column()
+    country: string
+
+    @Column()
+    address: string
+
+    @Column()
+    phone: string
+
+    @Column()
+    logo: string
+
+    @Column()
     email: string;
-    roles: Role[];
+    
+    @CreateDateColumn({ type: 'timestamp' })
+    createdAt: Date
 }
